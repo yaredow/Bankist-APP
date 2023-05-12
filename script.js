@@ -61,6 +61,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// Display movement
 const displayMovement = function (movements) {
   movements.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
@@ -74,15 +75,12 @@ const displayMovement = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovement(account1.movements);
 
 // calculate the current balance
-const calcDisplayBalance = function (movement) {
-  const balance = movement.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
-
-calcDisplayBalance(account1.movements);
 // Display transaction summary
 const calcDisplaySummary = function (movements) {
   const income = movements
@@ -100,10 +98,9 @@ const calcDisplaySummary = function (movements) {
   labelSumInterest.textContent = `${interest} €`;
 };
 
-calcDisplaySummary(account1.movements);
 // Create username and add to the accunts object
 const createUserName = function (accs) {
-  accounts.forEach(function (acc) {
+  accs.forEach(function (acc) {
     acc.username = acc.owner
       .toLowerCase()
       .split(' ')
@@ -115,6 +112,17 @@ const createUserName = function (accs) {
 };
 createUserName(accounts);
 console.log(accounts);
+
+const updateUI = function (acc) {
+  // Display movements
+  displayMovement(account1.movements);
+
+  // Display balance
+  calcDisplayBalance(acc);
+
+  // Display summary
+  calcDisplaySummary(acc.movements);
+};
 
 // Event handler
 let currentAccount;
@@ -128,6 +136,30 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }!`;
     containerApp.style.opacity = 100;
+
+    // Clear login field
+    inputLoginPin.value = inputLoginUsername.value = '';
+
+    // Display UI
+    updateUI(currentAccount);
+  }
+});
+
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const transferAmount = Number(inputTransferAmount.value);
+  const recieverAcc = accounts.find(
+    (account) => account.username === inputTransferTo.value
+  );
+  if (
+    transferAmount > 0 &&
+    recieverAcc &&
+    currentAccount.balance >= transferAmount &&
+    recieverAcc?.username !== currentAccount
+  ) {
+    currentAccount.movements.push(-transferAmount);
+    recieverAcc.movements.push(transferAmount);
+    updateUI(currentAccount);
   }
 });
 
