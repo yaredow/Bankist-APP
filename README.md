@@ -26,6 +26,8 @@ This is a JavaScript application that simulates a banking system. The app uses h
 ## Technologies Used
 
 * JavaScript
+* CSS
+* HTML
 
 ## Credits
 
