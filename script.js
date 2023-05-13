@@ -62,8 +62,10 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // Display movement
-const displayMovement = function (movements) {
-  movements.forEach(function (mov, i) {
+const displayMovement = function (movements, sort = false) {
+  containerMovements.innerHTML = '';
+  const moves = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  moves.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `<div class="movements__row">
@@ -145,6 +147,7 @@ btnLogin.addEventListener('click', function (e) {
   }
 });
 
+// Transfer
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
   const transferAmount = Number(inputTransferAmount.value);
@@ -164,6 +167,20 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+// Loan
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const loanAmount = Number(inputLoanAmount.value);
+  if (
+    currentAccount.movements.some((mov) => mov > (loanAmount * 10) / 100) &&
+    loanAmount > 0
+  ) {
+    currentAccount.movements.push(loanAmount);
+    updateUI(currentAccount);
+  }
+});
+
+// Close account
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
   if (
@@ -183,61 +200,10 @@ btnClose.addEventListener('click', function (e) {
   }
   inputCloseUsername.value = inputClosePin.value = '';
 });
-// ---------------------------------------------------------------
-// the filter method
-// const deposit = account1.movements.filter(function (mov) {
-//   return mov > 0;
-// });
-// console.log(deposit);
-
-// //withdrawals
-// const withdrawal = account1.movements.filter(function (mov) {
-//   return mov < 0;
-// });
-// console.log(withdrawal);
-
-// // current balance
-// const balance = account1.movements.reduce(function (acc, curr, i) {
-//   console.log(`Itereation ${i}: ${acc}`);
-//   return acc + curr;
-// }, 0);
-// console.log(balance);
-// The Map, Filter, and Reduce array methods
-
-// const movements = [200, -450, 400, 3000, -650, -130, 70, 1300];
-
-// // Map
-// const euroToUSD = 1.1;
-// const movementsUSD = movements.map((mov) => {
-//   return Math.floor(Math.abs(mov * euroToUSD));
-// });
-
-// console.log(movementsUSD);
-
-// const movementsUSDFor = [];
-// for (const movemnt of movements) {
-//   movementsUSDFor.push(Math.floor(Math.abs(movemnt * euroToUSD)));
-// }
-
-// console.log(movementsUSDFor);
-
-// const movementsDiscription = movements.map(
-//   (mov, i) =>
-//     `Movement ${i + 1}: You ${mov > 0 ? "deposited" : "withdrawn"} ${Math.abs(
-//       mov
-//     )}`
-// );
-// console.log(movementsDiscription);
-
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-// const eurUSD = 1.1;
-// const totalDepositUSD = movements
-//   .filter((mov) => mov > 0)
-//   .map((mov) => mov * eurUSD)
-//   .reduce((acc, mov) => acc + mov, 0);
-// console.log(totalDepositUSD);
-
-// const movements = [200, -450, 400, 3000, -650, -130, 70, 1300];
-
-// console.log(movements.includes(-130));
+// Sorting
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovement(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
