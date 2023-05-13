@@ -151,6 +151,7 @@ btnTransfer.addEventListener('click', function (e) {
   const recieverAcc = accounts.find(
     (account) => account.username === inputTransferTo.value
   );
+  inputTransferAmount.value = inputTransferTo.value = '';
   if (
     transferAmount > 0 &&
     recieverAcc &&
@@ -163,6 +164,25 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      (account) => account.username === currentAccount.username
+    );
+    console.log(index);
+
+    accounts.splice(index, 1);
+
+    containerApp.style.opacity = 0;
+
+    console.log(accounts);
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
 // ---------------------------------------------------------------
 // the filter method
 // const deposit = account1.movements.filter(function (mov) {
@@ -217,3 +237,7 @@ btnTransfer.addEventListener('click', function (e) {
 //   .map((mov) => mov * eurUSD)
 //   .reduce((acc, mov) => acc + mov, 0);
 // console.log(totalDepositUSD);
+
+// const movements = [200, -450, 400, 3000, -650, -130, 70, 1300];
+
+// console.log(movements.includes(-130));
